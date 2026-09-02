@@ -1,0 +1,84 @@
+* {
+  /* color: #e3e7e4;
+  font-family: "Roboto_Condensed", Arial, sans-serif; */
+  /* border-radius: 8px; */
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+p {
+  text-align: justify;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  margin-inline: 8px;
+}
+
+main {
+  margin: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+#nav-list ul {
+  display: flex;
+  gap: 24px;
+  list-style-type: none;
+}
+
+article#hero {
+  /* border: 1px solid red; */
+  display: flex;
+  flex-flow: column;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  /* align-content: flex-end; */
+}
+
+div.cta-buttons {
+  display: flex;
+  flex: 1;
+  /* border: 1px solid red; */
+  gap: 24px;
+}
+
+article#features {
+  /* border: 1px solid red; */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+}
+
+#features-container {
+  width: 1024px;
+  /* border: 1px solid red; */
+  display: flex;
+  /* flex-direction: col; */
+  /* flex: 1; */
+  justify-content: space-around;
+  align-content: space-around;
+  align-items: stretch;
+  gap: 16px;
+  /* row-gap: 24px; */
+}
+
+.feature-card {
+  /* border: 2px solid blue; */
+  width: fit-content;
+  display: flex;
+  gap: 8px;
+  flex-flow: column;
+  flex: 1 1 auto;
+  align-items: center;
+}
+
+.feature-card h3 {
+  align-self: center;
+}
