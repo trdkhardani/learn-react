@@ -1,8 +1,4 @@
 import { useState } from "react";
-// import heroImg from './assets/hero.png'
-// import reactLogo from './assets/react.svg'
-// import viteLogo from './assets/vite.svg'
-// import './App.css'
 
 function validate(form) {
   const errors = {};
@@ -25,18 +21,12 @@ function validate(form) {
     errors.targetAddress = "Alamat target harus diisi";
   }
 
-  // if (form.targetSex.trim() === "") {
-  //   errors.targetSex = "Jenis kelamin target harus dipilih";
-  // }
   if (form.targetSex.trim() !== "male" && form.targetSex.trim() !== "female") {
     errors.targetSex = "Jenis kelamin target harus dipilih";
   }
 
   if (form.targetPhoto) {
-    if (
-      !form.targetPhoto.endsWith(".png") &&
-      !form.targetPhoto.endsWith(".jpg")
-    ) {
+    if (form.targetPhoto.type !== "image/png" && form.targetPhoto.type !== "image/jpeg") {
       errors.targetPhoto = "Foto target harus dalam format .png atau .jpg";
     }
   }
@@ -91,32 +81,34 @@ function App() {
   const [validationError, setValidationError] = useState({});
   const [isSending, setIsSending] = useState(false);
   const [sendingError, setSendingError] = useState("");
-  const [isSendingSuccess, setisSendingSuccess] = useState(false);
+  const [isSendingSuccess, setIsSendingSuccess] = useState(false);
 
   const handleSubmit = async (ev) => {
     try {
+      setIsSendingSuccess(false)
+      setSendingError('')
+
       ev.preventDefault();
 
       const validateForm = validate(form);
       if (Object.keys(validateForm).length > 0) {
-        console.log(form)
-        console.log(validateForm)
         setValidationError(validateForm);
         return
       }
 
       // passed the validations
       setIsSending(true)
+      setSendingError('')
+      setIsSendingSuccess(false)
       setValidationError({})
 
       await simulateSendSantet()
 
-      setisSendingSuccess(true)
+      setIsSendingSuccess(true)
       console.log(form);
     } catch (err) {
-      setisSendingSuccess(false)
+      setIsSendingSuccess(false)
       setSendingError(err.message)
-      // console.error(err);
     } finally {
       setIsSending(false);
     }
@@ -184,14 +176,14 @@ function App() {
         <br />
         <label htmlFor="targetSex">Jenis Kelamin Target</label>
         <select
-          // ref={targetSexRef}
+          value={form.targetSex} // sangat disarankan ada atr value ini
           onChange={(ev) =>
             setForm((prevForm) => ({ ...prevForm, targetSex: ev.target.value }))
           }
           name="targetSex"
           id="targetSex"
         >
-          <option value="" selected>
+          <option value="" disabled> {/** gak perlu atr 'selected' */}
             Pilih Jenis Kelamin
           </option>
           <option value="male">Laki-laki</option>
@@ -204,18 +196,19 @@ function App() {
           onChange={(ev) =>
             setForm((prevForm) => ({
               ...prevForm,
-              targetPhoto: ev.target.value,
+              targetPhoto: ev.target.files[0] ?? null,
             }))
           }
           type="file"
           name="targetPhoto"
           id="targetPhoto"
-          accept=".png, jpg, .jpeg"
+          accept="image/png,image/jpeg"
         />
         {validationError.targetPhoto && <p style={{ color: 'red' }}>{validationError.targetPhoto}</p>}
         <br />
         <label htmlFor="santetType">Jenis Santet</label>
         <select
+          value={form.santetType} // sangat disarankan ada atr value ini
           onChange={(ev) =>
             setForm((prevForm) => ({
               ...prevForm,
@@ -225,7 +218,7 @@ function App() {
           name="santetType"
           id="santetType"
         >
-          <option value="" selected>
+          <option value="" disabled> {/** gak perlu atr 'selected' */}
             Pilih Jenis Santet
           </option>
           <option value="muntahPaku">Muntah Paku</option>
@@ -246,6 +239,7 @@ function App() {
         <br />
         <label htmlFor="santetLevel">Level Santet</label>
         <select
+          value={form.santetLevel} // sangat disarankan ada atr value ini
           onChange={(ev) =>
             setForm((prevForm) => ({
               ...prevForm,
@@ -255,7 +249,7 @@ function App() {
           name="santetLevel"
           id="santetLevel"
         >
-          <option value="" selected>
+          <option value="" disabled> {/** gak perlu atr 'selected' */}
             Pilih Level Santet
           </option>
           <option value="ringan">Ringan</option>
