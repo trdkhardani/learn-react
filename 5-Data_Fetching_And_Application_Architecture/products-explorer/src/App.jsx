@@ -43,22 +43,22 @@ function App() {
   const [error, setError] = useState(null);
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
-  const [category, setCategory] = useState("all");
+  const [category, setCategory] = useState("");
   const [productCategories, setProductCategories] = useState([]);
-  const [sort, setSort] = useState("all");
+  const [sortOption, setSortOption] = useState({ by: "", order: "asc" });
   const [total, setTotal] = useState(0);
   const [products, setProducts] = useState([]);
 
   useEffect(() => {
     (async () => {
       try {
-        const categories = await fetchProductCategories()
-        setProductCategories(categories)
-      } catch(err) {
-        console.error(err)
+        const categories = await fetchProductCategories();
+        setProductCategories(categories);
+      } catch (err) {
+        console.error(err);
       }
-    })()
-  }, [])
+    })();
+  }, []);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -69,16 +69,18 @@ function App() {
         setError(null);
         setProducts([]);
 
-        if (search.length < 1) return;
+        // if (search.length < 1) return;
 
         const data = await fetchProducts({
           search,
-          page,
-          category,
+          // page,
+          // category,
           signal: controller.signal,
         });
         setProducts(data.products);
         setTotal(data.total);
+        // if (category)
+        //   setProducts([...data.products].filter((product) => product.category === category))
       } catch (err) {
         if (controller.signal.aborted) return;
         setError(err.message);
@@ -90,7 +92,29 @@ function App() {
     return () => {
       controller.abort();
     };
-  }, [search, page, category]);
+  }, [search]);
+
+  // const filteredProducts =
+  //   sortOption.by.length > 0
+  //     ? [...sortedProducts].filter((product) => product.category === category)
+  //     : [...products].filter((product) => product.category === category);
+  const filteredProducts =
+    category.length > 0
+      ? products.filter((product) => product.category === category)
+      : products;
+  const totalFilteredProducts = filteredProducts.length;
+
+  const sortedProducts = [...products].sort((a, b) => {
+    if (sortOption.by === "title") {
+      return sortOption.order === "asc"
+        ? a.title.localeCompare(b.title)
+        : b.title.localeCompare(a.title);
+    }
+
+    if (sortOption.order === "desc") return b[sortOption.by] - a[sortOption.by];
+
+    return a[sortOption.by] - b[sortOption.by];
+  });
 
   return (
     <>
@@ -106,13 +130,60 @@ function App() {
           }}
         />
         <label htmlFor="category-dropdown">Category</label>
-        <select value={category} name="category-dropdown" id="category-dropdown" onChange={(ev) => setCategory(ev.target.value)}>
-          <option value="all">All</option>
-          {
-            productCategories.map((category) => <option key={category.slug} value={category.slug}>{category.name}</option>)
-          }
+        <select
+          value={category}
+          name="category-dropdown"
+          id="category-dropdown"
+          onChange={(ev) => {
+            setCategory(ev.target.value);
+            setPage(1);
+          }}
+        >
+          <option value="">All</option>
+          {productCategories.map((category) => (
+            <option key={category.slug} value={category.slug}>
+              {category.name}
+            </option>
+          ))}
         </select>
-        {console.log(category)}
+        <label htmlFor="sort-by">Sort By</label>
+        <select
+          value={sortOption.by}
+          name="sort-by"
+          id="sort-by"
+          onChange={(ev) => {
+            setSortOption((sortOption) => ({
+              ...sortOption,
+              by: ev.target.value,
+            }));
+            setPage(1);
+          }}
+        >
+          <option value="">None</option>
+          <option value="price">Price</option>
+          <option value="title">Title</option>
+          <option value="rating">Rating</option>
+        </select>
+        {sortOption.by.length > 0 && (
+          <span>
+            <label htmlFor="order-by">Order</label>
+            <select
+              value={sortOption.order}
+              name="order-by"
+              id="order-by"
+              onChange={(ev) => {
+                setSortOption((sortOption) => ({
+                  ...sortOption,
+                  order: ev.target.value,
+                }));
+                setPage(1);
+              }}
+            >
+              <option value="asc">Ascending</option>
+              <option value="desc">Descending</option>
+            </select>
+          </span>
+        )}
         {search.length < 1 && !loading && products.length === 0 && (
           <p>Search for Products</p>
         )}
@@ -122,12 +193,24 @@ function App() {
           <p>No products found</p>
         )}
         <div id="products-container">
-          {products.map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
+          {category.length > 0
+            ? filteredProducts
+                .slice((page - 1) * 10, page * 10)
+                .map((product) => (
+                  <ProductCard key={product.id} product={product} />
+                ))
+            : sortedProducts
+                .slice((page - 1) * 10, page * 10)
+                .map((product) => (
+                  <ProductCard key={product.id} product={product} />
+                ))}
         </div>
-        {search.length > 0 && !loading && products.length > 0 && (
-          <PageHandler page={page} onPageChange={setPage} total={total} />
+        {search.length >= 0 && !loading && products.length > 0 && (
+          <PageHandler
+            page={page}
+            onPageChange={setPage}
+            total={category.length > 0 ? totalFilteredProducts : total}
+          />
         )}
       </main>
     </>

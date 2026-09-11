@@ -1,12 +1,12 @@
 export async function fetchProducts({search, category, page, signal}) {
-  const limit = 10;
-  const skip = (page - 1) * limit;
+  const limit = 200;
+  // const skip = (page - 1) * limit;
 
   const params = new URLSearchParams({
     q: search,
-    category,
+    // category,
     limit,
-    skip
+    // skip
   });
 
   const response = await fetch(
