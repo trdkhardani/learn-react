@@ -1,8 +1,38 @@
 import { useEffect, useState } from "react";
 import "./App.css";
-import { fetchProductCategories, fetchProducts } from "./api/products";
+import { fetchProductCategories } from "./api/products";
+import useProducts from "./hooks/useProducts";
+import useProduct from "./hooks/useProduct";
 
-function ProductCard({ product }) {
+function ProductDetail({ productId, onSelectedProductIdChange }) {
+  const { product, loading, error } = useProduct(productId);
+  return (
+    <>
+      {loading && "Loading Product..."}
+      {!loading && (
+        <button onClick={() => onSelectedProductIdChange(null)}>Back</button>
+      )}
+      {error && <p>{error}</p>}
+      {!loading && !error && (
+        <div id="product-detail">
+          <p>
+            <img src={product.thumbnail} alt={product.title} />{" "}
+          </p>
+          <h2>{product.title}</h2>
+          <p>{product.category}</p>
+          <p>${product.price}</p>
+          <p>&#11088; {product.rating}</p>
+          <p>{product.availabilityStatus}</p>
+          <p>Stock: {product.stock}</p>
+          <p>Warranty Information: {product.warrantyInformation}</p>
+          <p>Shipping Information: {product.shippingInformation}</p>
+        </div>
+      )}
+    </>
+  );
+}
+
+function ProductCard({ product, onSelectedProductIdChange }) {
   return (
     <div className="product-card">
       <p>
@@ -13,6 +43,12 @@ function ProductCard({ product }) {
       <p>${product.price}</p>
       <p>&#11088; {product.rating}</p>
       <p>{product.availabilityStatus}</p>
+      <button
+        className="view-detail-btn"
+        onClick={() => onSelectedProductIdChange(product.id)}
+      >
+        View Detail
+      </button>
     </div>
   );
 }
@@ -39,15 +75,12 @@ function PageHandler({ page, onPageChange, total }) {
 }
 
 function App() {
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const [category, setCategory] = useState("");
   const [productCategories, setProductCategories] = useState([]);
   const [sortOption, setSortOption] = useState({ by: "", order: "asc" });
-  const [total, setTotal] = useState(0);
-  const [products, setProducts] = useState([]);
+  const [selectedProductId, setSelectedProductId] = useState(null);
 
   useEffect(() => {
     (async () => {
@@ -60,51 +93,16 @@ function App() {
     })();
   }, []);
 
-  useEffect(() => {
-    const controller = new AbortController();
+  const { products, loading, error, total } = useProducts(search);
 
-    (async () => {
-      try {
-        setLoading(true);
-        setError(null);
-        setProducts([]);
-
-        // if (search.length < 1) return;
-
-        const data = await fetchProducts({
-          search,
-          // page,
-          // category,
-          signal: controller.signal,
-        });
-        setProducts(data.products);
-        setTotal(data.total);
-        // if (category)
-        //   setProducts([...data.products].filter((product) => product.category === category))
-      } catch (err) {
-        if (controller.signal.aborted) return;
-        setError(err.message);
-      } finally {
-        if (!controller.signal.aborted) setLoading(false);
-      }
-    })();
-
-    return () => {
-      controller.abort();
-    };
-  }, [search]);
-
-  // const filteredProducts =
-  //   sortOption.by.length > 0
-  //     ? [...sortedProducts].filter((product) => product.category === category)
-  //     : [...products].filter((product) => product.category === category);
   const filteredProducts =
     category.length > 0
       ? products.filter((product) => product.category === category)
       : products;
   const totalFilteredProducts = filteredProducts.length;
 
-  const sortedProducts = [...products].sort((a, b) => {
+  const productsCopy = category.length > 0 ? [...filteredProducts] : [...products]
+  const sortedProducts = productsCopy.sort((a, b) => {
     if (sortOption.by === "title") {
       return sortOption.order === "asc"
         ? a.title.localeCompare(b.title)
@@ -116,10 +114,22 @@ function App() {
     return a[sortOption.by] - b[sortOption.by];
   });
 
+  const paginatedProducts = sortedProducts.slice((page - 1) * 10, page * 10);
+
   return (
     <>
       <h1>Products Explorer</h1>
-      <main>
+      {selectedProductId && (
+        <article>
+          {selectedProductId && (
+            <ProductDetail
+              productId={selectedProductId}
+              onSelectedProductIdChange={setSelectedProductId}
+            />
+          )}
+        </article>
+      )}
+      <main hidden={selectedProductId ? true : false}>
         <label htmlFor="search">Search</label>
         <input
           value={search}
@@ -193,17 +203,13 @@ function App() {
           <p>No products found</p>
         )}
         <div id="products-container">
-          {category.length > 0
-            ? filteredProducts
-                .slice((page - 1) * 10, page * 10)
-                .map((product) => (
-                  <ProductCard key={product.id} product={product} />
-                ))
-            : sortedProducts
-                .slice((page - 1) * 10, page * 10)
-                .map((product) => (
-                  <ProductCard key={product.id} product={product} />
-                ))}
+          {paginatedProducts.map((product) => (
+            <ProductCard
+              key={product.id}
+              product={product}
+              onSelectedProductIdChange={setSelectedProductId}
+            />
+          ))}
         </div>
         {search.length >= 0 && !loading && products.length > 0 && (
           <PageHandler

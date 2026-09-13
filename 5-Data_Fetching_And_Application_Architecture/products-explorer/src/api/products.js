@@ -1,4 +1,4 @@
-export async function fetchProducts({search, category, page, signal}) {
+export async function fetchProducts({ search, category, page, signal }) {
   const limit = 200;
   // const skip = (page - 1) * limit;
 
@@ -19,12 +19,21 @@ export async function fetchProducts({search, category, page, signal}) {
   return await response.json();
 }
 
-
-export async function fetchProductCategories() {
-  const response = await fetch('https://dummyjson.com/products/categories');
+export async function fetchProductById(productId, signal) {
+  const response = await fetch(`https://dummyjson.com/products/${productId}`, {
+    signal,
+  });
 
   if (!response.ok)
-    throw new Error('Error fetching categories');
+    throw new Error(`Error fetching product with ID ${productId}`);
+
+  return await response.json();
+}
+
+export async function fetchProductCategories() {
+  const response = await fetch("https://dummyjson.com/products/categories");
+
+  if (!response.ok) throw new Error("Error fetching categories");
 
   return await response.json();
 }

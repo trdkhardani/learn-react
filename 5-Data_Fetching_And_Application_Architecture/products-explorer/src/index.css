@@ -127,6 +127,21 @@ code {
   /* width: 480px; */
 }
 
+.view-detail-btn {
+  width: fit-content;
+  align-self: center;
+  margin-top: 16px;
+  margin-bottom: 8px;
+}
+
+#product-detail {
+  border: 1px solid white;
+  margin-top: 16px;
+  display: flex;
+  flex-flow: column;
+  /* width: 480px; */
+}
+
 #page-handler {
   margin-top: 16px;
   display: flex;
