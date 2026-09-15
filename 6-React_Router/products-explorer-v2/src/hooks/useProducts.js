@@ -20,14 +20,10 @@ function useProducts(search) {
 
         const data = await fetchProducts({
           search,
-          // page,
-          // category,
           signal: controller.signal,
         });
         setProducts(data.products);
         setTotal(data.total);
-        // if (category)
-        //   setProducts([...data.products].filter((product) => product.category === category))
       } catch (err) {
         if (controller.signal.aborted) return;
         setError(err.message);

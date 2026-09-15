@@ -1,56 +1,60 @@
+import { useSearchParams } from 'react-router-dom';
 import useProducts from '../hooks/useProducts';
 import Pagination from "./Pagination";
 import ProductCard from "./ProductCard";
 
-function ProductList({ search, page, onPageChange, category, sortOption, onSelectedProductIdChange }) {
+function ProductList() {
+  const [searchParams] = useSearchParams()
+  const search = searchParams.get("search") ?? "";
+  const page = Number(searchParams.get("page") ?? "1");
+  const category = searchParams.get("category") ?? "";
+  const sort = searchParams.get("sort") ?? "";
+  const order = searchParams.get("order") ?? "";
+
   const { products, loading, error, total } = useProducts(search);
 
   const filteredProducts =
-    category.length > 0
+    (category && category.length > 0)
       ? products.filter((product) => product.category === category)
       : products;
   const totalFilteredProducts = filteredProducts.length;
 
   const productsCopy =
-    category.length > 0 ? [...filteredProducts] : [...products];
+    (category && category.length > 0) ? [...filteredProducts] : [...products];
   const sortedProducts = productsCopy.sort((a, b) => {
-    if (sortOption.by === "title") {
-      return sortOption.order === "asc"
+    if (sort === "title") {
+      return order === "asc"
         ? a.title.localeCompare(b.title)
         : b.title.localeCompare(a.title);
     }
 
-    if (sortOption.order === "desc") return b[sortOption.by] - a[sortOption.by];
+    if (order === "desc") return b[sort] - a[sort];
 
-    return a[sortOption.by] - b[sortOption.by];
+    return a[sort] - b[sort];
   });
 
+  const totalProducts = category.length > 0 ? totalFilteredProducts : total;
   const paginatedProducts = sortedProducts.slice((page - 1) * 10, page * 10);
 
   return (
     <>
-      {search.length < 1 && !loading && products.length === 0 && (
+      {(search && search.length < 1) && !loading && products.length === 0 && (
         <p>Search for Products</p>
       )}
       {loading && <p>Searching Products...</p>}
       {error && <p>{error}</p>}
-      {search.length > 0 && !loading && !error && products.length === 0 && (
+      {(search && search.length >= 0) && !loading && !error && products.length === 0 && (
         <p>No products found</p>
       )}
       <div id="products-container">
         {paginatedProducts.map((product) => (
-          <ProductCard
-            key={product.id}
-            product={product}
-            onSelectedProductIdChange={onSelectedProductIdChange}
-          />
+          <ProductCard key={product.id} product={product} />
         ))}
       </div>
-      {search.length >= 0 && !loading && products.length > 0 && (
+      { !loading && products.length > 0 && (
         <Pagination
           page={page}
-          onPageChange={onPageChange}
-          total={category.length > 0 ? totalFilteredProducts : total}
+          total={totalProducts}
         />
       )}
     </>

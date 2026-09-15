@@ -1,15 +1,19 @@
+import { useNavigate, useParams } from 'react-router-dom';
 import useProduct from '../hooks/useProduct';
 
-function ProductDetail({ productId, onSelectedProductIdChange }) {
+function ProductDetail() {
+  const { productId } = useParams();
+  const navigate = useNavigate();
   const { product, loading, error } = useProduct(productId);
+
   return (
     <>
       <h1>Product Details</h1>
       {loading && "Loading Product..."}
       {!loading && (
-        <button onClick={() => onSelectedProductIdChange(null)}>Back</button>
+        <button onClick={() => error ? navigate('/') : navigate(-1)}>{error ? 'Back To Home' : 'Back'}</button>
       )}
-      {error && <p>{error}</p>}
+      {!loading && error && <p>{error.message}</p>}
       {!loading && !error && (
         <div id="product-detail">
           <p>

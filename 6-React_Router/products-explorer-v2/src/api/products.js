@@ -1,12 +1,9 @@
-export async function fetchProducts({ search, category, page, signal }) {
+export async function fetchProducts({ search, signal }) {
   const limit = 200;
-  // const skip = (page - 1) * limit;
 
   const params = new URLSearchParams({
     q: search,
-    // category,
     limit,
-    // skip
   });
 
   const response = await fetch(
@@ -24,8 +21,12 @@ export async function fetchProductById(productId, signal) {
     signal,
   });
 
-  if (!response.ok)
-    throw new Error(`Error fetching product with ID ${productId}`);
+  if (!response.ok) {
+    if (response.status === 404)
+      throw new Error(`No product with ID ${productId} found`);
+
+    throw new Error("Error fetching products");
+  }
 
   return await response.json();
 }

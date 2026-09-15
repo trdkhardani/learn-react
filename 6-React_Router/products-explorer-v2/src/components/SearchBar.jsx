@@ -1,4 +1,8 @@
-function SearchBar({ search, onSearchChange, onPageChange }) {
+import { useSearchParams } from 'react-router-dom';
+
+function SearchBar() {
+  const [searchParams, setSearchParams] = useSearchParams()
+  const search = searchParams.get("search") ?? ""
   return (
     <>
     <label htmlFor="search">Search</label>
@@ -6,8 +10,11 @@ function SearchBar({ search, onSearchChange, onPageChange }) {
           value={search}
           type="text"
           onChange={(ev) => {
-            onSearchChange(ev.target.value);
-            onPageChange(1);
+            setSearchParams((currentParams) => {
+              currentParams.set("search", ev.target.value)
+              currentParams.set("page", 1)
+              return currentParams
+            });
           }}
         />
     </>

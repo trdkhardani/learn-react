@@ -1,8 +1,10 @@
 import { useEffect } from 'react';
 import { fetchProductCategories } from '../api/categories';
+import { useSearchParams } from 'react-router-dom';
 
-function CategoryFilter({ category, onCategoryChange, productCategories, onProductCategoriesChange, onPageChange }) {
-
+function CategoryFilter({ productCategories, onProductCategoriesChange }) {
+  const [searchParams, setSearchParams] = useSearchParams()
+  const category = searchParams.get("category") ?? "";
   useEffect(() => {
     (async () => {
       try {
@@ -22,8 +24,11 @@ function CategoryFilter({ category, onCategoryChange, productCategories, onProdu
         name="category-dropdown"
         id="category-dropdown"
         onChange={(ev) => {
-          onCategoryChange(ev.target.value);
-          onPageChange(1);
+          setSearchParams((currentParams) => {
+            currentParams.set("category", ev.target.value);
+            currentParams.set("page", 1);
+            return currentParams
+          });
         }}
       >
         <option value="">All</option>

@@ -1,4 +1,6 @@
-function ProductCard({ product, onSelectedProductIdChange }) {
+import { Link } from "react-router-dom";
+
+function ProductCard({ product }) {
   return (
     <div className="product-card">
       <p>
@@ -9,14 +11,11 @@ function ProductCard({ product, onSelectedProductIdChange }) {
       <p>${product.price}</p>
       <p>&#11088; {product.rating}</p>
       <p>{product.availabilityStatus}</p>
-      <button
-        className="view-detail-btn"
-        onClick={() => onSelectedProductIdChange(product.id)}
-      >
-        View Detail
-      </button>
+      {/* <button className="view-detail-btn"> */}
+        <Link className='view-detail-btn' to={`/products/${product.id}`}>View Detail</Link>
+      {/* </button> */}
     </div>
   );
 }
 
-export default ProductCard
+export default ProductCard;

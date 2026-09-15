@@ -19,7 +19,7 @@ function useProduct(productId) {
         setProduct(data);
       } catch(err) {
         if (controller.signal.aborted) return;
-        setError(err.message)
+        setError(err)
         console.error(err)
       } finally {
         if (!controller.signal.aborted)
