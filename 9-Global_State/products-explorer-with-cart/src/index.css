@@ -142,11 +142,12 @@ code {
 }
 
 #product-detail {
+  left: 25%;
   border: 1px solid white;
   margin-top: 16px;
   display: flex;
   flex-flow: column;
-  /* width: 480px; */
+  width: 50%;
 }
 
 #page-handler {

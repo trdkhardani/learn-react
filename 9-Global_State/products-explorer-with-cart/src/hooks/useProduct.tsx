@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { fetchProductById } from '../api/products';
 import type { Product } from '../types/product';
 
-type State = {
+export type ProductState = {
   status: "loading";
 } | {
   status: "success";
@@ -13,7 +13,7 @@ type State = {
 }
 
 function useProduct(productId: string) {
-  const [state, setState] = useState<State>()
+  const [state, setState] = useState<ProductState>()
 
   useEffect(() => {
     const controller = new AbortController();
