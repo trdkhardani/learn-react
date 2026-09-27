@@ -49,7 +49,7 @@ function Cart() {
     return () => {
       controller.abort();
     }
-  }, [])
+  }, [cartItems])
 
   let totalItems  = 0;
   let totalPrice  = 0;

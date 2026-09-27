@@ -29,13 +29,12 @@ export const useUserStore = create<UserStore>((set) => ({
       };
 
       console.log('Valid User! ' + user.name)
-      state.user = {
-        ...user,
-        sessionId: btoa(user.email)
-      }
 
       return {
-        user: state.user
+        user: {
+          ...user,
+          sessionId: btoa(user.email)
+        }
       }
     });
   },

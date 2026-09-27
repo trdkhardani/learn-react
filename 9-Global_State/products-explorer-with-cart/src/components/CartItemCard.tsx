@@ -19,9 +19,9 @@ function CartItemCard({cartItem, product}: {cartItem: CartItem, product: Product
           <p>{product.title}</p>
           <p>${`${product.price} each`}</p>
           <div className="quantity-control">
-            <button onClick={() => cartItem.quantity === 1 ? deleteCartItem(cartItem.productId) : updateQuantity(cartItem.productId, -1)}>-</button>
+            <button onClick={() => cartItem.quantity === 1 ? deleteCartItem(cartItem.productId) : updateQuantity(cartItem.productId, cartItem.quantity - 1)}>-</button>
             <p>{cartItem.quantity}</p>
-            <button onClick={() => updateQuantity(cartItem.productId, 1)}>+</button>
+            <button onClick={() => updateQuantity(cartItem.productId, cartItem.quantity + 1)}>+</button>
           </div>
           <button onClick={() => deleteCartItem(cartItem.productId)}>Delete</button>
         </div>
