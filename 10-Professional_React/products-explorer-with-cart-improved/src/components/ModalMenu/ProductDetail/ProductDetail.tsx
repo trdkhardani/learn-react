@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { lazy, Suspense, useState } from "react";
 import useProduct from "../../../hooks/useProduct";
-import ProductReview from "./ProductReview";
-import ProductDetailStructure from './ProductDetailStructure';
+// import ProductReview from "./ProductReview";
+const ProductReview = lazy(() => import("./ProductReview"))
+// import ProductDetailStructure from './ProductDetailStructure';
 
 function ProductDetail({
   productId,
@@ -15,13 +16,13 @@ function ProductDetail({
 
   return (
     <>
-      {status === "loading" && <ProductDetailStructure onDetailModalOpen={onDetailModalOpen} />}
+      {/* {status === "loading" && <ProductDetailStructure onDetailModalOpen={onDetailModalOpen} />} */}
       {/* {status !== "loading" && (
         <button onClick={() => status === "error" ? navigate('/') : navigate(-1)}>{status === "error" ? 'Back To Home' : 'Back'}</button>
       )} */}
       {status === "error" && <p>{errorMsg}</p>}
       {status === "success" && (
-        <div id="product-detail" className="modal">
+        <dialog id="product-detail" className="modal">
           <button
             aria-label={`Close ${product.title} details menu`}
             style={{ width: "fit-content" }}
@@ -41,13 +42,23 @@ function ProductDetail({
           <p>Stock: {product.stock}</p>
           <p>Warranty Information: {product.warrantyInformation}</p>
           <p>Shipping Information: {product.shippingInformation}</p>
-          <button aria-label={`Toggle ${product.title} reviews`} onClick={() => setReviewsToggle(!reviewsToggle)}>
+          <button
+            aria-label={`Toggle ${product.title} reviews`}
+            onClick={() => setReviewsToggle(!reviewsToggle)}
+          >
             {reviewsToggle ? "Hide Reviews" : "See Reviews"}
           </button>
-          {product.reviews.map((review) => (
-            <ProductReview review={review} reviewsToggle={reviewsToggle} />
-          ))}
-        </div>
+          {reviewsToggle &&
+            product.reviews.map((review, index) => (
+              <Suspense fallback={<p>Loading Reviews...</p>}>
+                <ProductReview
+                  key={index}
+                  review={review}
+                  // reviewsToggle={reviewsToggle}
+                />
+              </Suspense>
+            ))}
+        </dialog>
       )}
     </>
   );

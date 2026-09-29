@@ -1,15 +1,20 @@
-import { Route, Routes } from 'react-router-dom'
-import AppLayout from './AppLayout'
-import Home from './pages/Home'
-import ProductExplorer from './pages/ProductExplorer'
-import UserProfile from './pages/Profile';
+import { Route, Routes } from "react-router-dom";
+import { lazy, Suspense } from "react";
+import AppLayout from "./AppLayout";
+import Home from "./pages/Home";
+// import ProductExplorer from "./pages/ProductExplorer";
+import UserProfile from "./pages/Profile";
 import Cart from './pages/Cart';
-import NotFound from './pages/NotFound';
-import LoginPage from './pages/LoginPage';
+import NotFound from "./pages/NotFound";
+import LoginPage from "./pages/LoginPage";
+
+const ProductExplorer = lazy(() => import("./pages/ProductExplorer"));
+// const Cart = lazy(() => import("./pages/Cart"));
 
 function AppRoutes() {
   return (
-    <Routes>
+    <Suspense fallback={<div>Switching...</div>}>
+      <Routes>
         <Route path="/" element={<AppLayout />}>
           <Route index element={<Home />} />
           <Route path="products" element={<ProductExplorer />} />
@@ -20,7 +25,8 @@ function AppRoutes() {
         </Route>
         <Route path="*" element={<NotFound />} />
       </Routes>
-  )
+    </Suspense>
+  );
 }
 
-export default AppRoutes
+export default AppRoutes;

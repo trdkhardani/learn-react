@@ -1,8 +1,8 @@
 import type { Review } from '../../../types/product';
 
-function ProductReview({review, reviewsToggle}: {review: Review, reviewsToggle: boolean}) {
+function ProductReview({review}: {review: Review}) {
   return (
-    <div className='product-reviews' style={reviewsToggle ? {} : { display: 'none' }}>
+    <div className='product-reviews'>
       <p><strong>{review.reviewerName}</strong></p>
       <p>{review.date}</p>
       <p>&#11088; {review.rating}</p>

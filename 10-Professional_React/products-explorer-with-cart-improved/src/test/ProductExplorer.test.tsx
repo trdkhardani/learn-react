@@ -1,9 +1,10 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import ProductExplorer from "../pages/ProductExplorer";
 import { MemoryRouter } from "react-router-dom";
 import AppRoutes from "../AppRoutes";
+import * as productsApi from "../api/products";
 
 describe("ProductExplorer", () => {
   it("should show search label and input", () => {
@@ -44,10 +45,6 @@ describe("ProductExplorer", () => {
 
     await user.type(inputSearchElement, "powder");
 
-    // expect(
-    //   await screen.findByText("Fragrances")
-    // ).toBeInTheDocument();
-
     expect(screen.getByText("Searching Products...")).toBeInTheDocument();
 
     expect(await screen.findByText("Powder Canister")).toBeInTheDocument();
@@ -82,12 +79,6 @@ describe("ProductExplorer", () => {
       await screen.findByTestId("products-container-element"),
     ).toBeInTheDocument();
 
-    // const addToCartButton = await screen.findByRole("button", {
-    //   name: "Add To Cart",
-    // });
-    // const addToCartButton = await screen.findByRole("heading", {
-    //   name: "Essence Mascara Lash Princess",
-    // });
     const addToCartButton = await screen.findByTestId("add-to-cart-button-1");
 
     expect(addToCartButton).toBeInTheDocument();
@@ -112,5 +103,26 @@ describe("ProductExplorer", () => {
     const cartItem = await screen.findByTestId("cart-item-card-1");
 
     expect(cartItem).toBeInTheDocument();
+  });
+
+  it("should show error message due to products fetching error", async () => {
+    // const user = userEvent.setup();
+    // const controller = new AbortController();
+    const fetchProductsMockFnError = vi
+      .spyOn(productsApi, "fetchProducts")
+      .mockRejectedValue(new Error("Error fetching products"));
+
+    render(
+      <MemoryRouter initialEntries={["/products"]}>
+        <AppRoutes />
+      </MemoryRouter>,
+    );
+
+    const errorMessage = await screen.findByText("Error fetching products");
+
+    expect(errorMessage).toBeInTheDocument();
+    expect(fetchProductsMockFnError).toHaveBeenCalledTimes(1);
+
+    fetchProductsMockFnError.mockRestore();
   });
 });
