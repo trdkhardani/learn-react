@@ -6,7 +6,7 @@ import { MemoryRouter } from "react-router-dom";
 import AppRoutes from "../AppRoutes";
 
 const initialActions = async (expect: ExpectStatic, user: UserEvent) => {
-  expect(screen.getByText("Searching Products...")).toBeInTheDocument();
+  expect(await screen.findByText("Searching Products...")).toBeInTheDocument();
 
   expect(
     await screen.findByTestId("products-container-element"),
@@ -59,6 +59,8 @@ describe("Cart", () => {
         <AppRoutes />
       </MemoryRouter>,
     );
+
+    expect(screen.getByText("Switching...")).toBeInTheDocument();
 
     await initialActions(expect, user);
 

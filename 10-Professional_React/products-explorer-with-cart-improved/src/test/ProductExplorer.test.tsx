@@ -24,7 +24,8 @@ describe("ProductExplorer", () => {
       </MemoryRouter>,
     );
 
-    expect(screen.getByText("Searching Products...")).toBeInTheDocument();
+    // expect(screen.getByText("Switching...")).toBeInTheDocument();
+    expect(await screen.findByText("Searching Products...")).toBeInTheDocument();
 
     expect(
       await screen.findByTestId("products-container-element"),
@@ -49,6 +50,7 @@ describe("ProductExplorer", () => {
 
     expect(await screen.findByText("Powder Canister")).toBeInTheDocument();
   });
+
   it("should show products", async () => {
     render(
       <MemoryRouter initialEntries={["/products"]}>
@@ -73,7 +75,8 @@ describe("ProductExplorer", () => {
       </MemoryRouter>,
     );
 
-    expect(screen.getByText("Searching Products...")).toBeInTheDocument();
+    expect(screen.getByText("Switching...")).toBeInTheDocument();
+    expect(await screen.findByText("Searching Products...")).toBeInTheDocument();
 
     expect(
       await screen.findByTestId("products-container-element"),
