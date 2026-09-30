@@ -126,6 +126,6 @@ describe("ProductExplorer", () => {
     expect(errorMessage).toBeInTheDocument();
     expect(fetchProductsMockFnError).toHaveBeenCalledTimes(1);
 
-    fetchProductsMockFnError.mockRestore();
+    // fetchProductsMockFnError.mockRestore();
   });
 });
