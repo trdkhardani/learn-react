@@ -16,6 +16,15 @@ export async function fetchProducts(page: number): Promise<ProductsResponse> {
   return await response.json();
 }
 
+export async function fetchNewProducts(): Promise<Product[]> {
+  const fakeNewProductsApi = async () => {
+    setTimeout(() => {
+      return newlyAddedProducts;
+    }, 500)
+  }
+  return fakeNewProductsApi;
+}
+
 export async function addNewProduct(input: ProductInput): Promise<Product> {
   const response = await fetch(`${apiBaseUrl}/add`, {
     method: "POST",

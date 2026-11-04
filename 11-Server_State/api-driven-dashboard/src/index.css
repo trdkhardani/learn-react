@@ -109,3 +109,45 @@ code {
   padding: 4px 8px;
   background: var(--code-bg);
 }
+
+nav {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+nav ul {
+  display: flex;
+  gap: 8px;
+
+  list-style-type: none;
+}
+
+.products-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 16px;
+
+  margin-inline: 32px;
+}
+
+.product-card {
+  border: 1px solid white;
+  margin-top: 16px;
+  display: flex;
+  flex-flow: column;
+  /* width: 480px; */
+}
+
+.product-card-buttons-wrapper {
+  display: flex;
+  /* align-items: center; */
+  justify-content:space-around;
+  margin-block: 8px;
+}
+
+#pagination {
+  margin-top: 16px;
+  display: flex;
+  justify-content: center;
+}
