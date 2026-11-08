@@ -13,6 +13,7 @@ function ProductRecords() {
     isFetching,
     isError,
     error,
+    refetch,
   } = useQuery({
     queryKey: ["productRecords", page],
     queryFn: () => fetchProducts(page),
@@ -35,6 +36,7 @@ function ProductRecords() {
       <h2>Products</h2>
       {(isPending || isFetching) && <p>Loading...</p>}
       {isError && <p>{error.message}</p>}
+      <button type='button' onClick={() => {refetch();}}>Refresh</button>
       <div id="product-records" className="products-container">
         {productRecords?.products.map((product) => (
           <ProductCard key={product.id} product={product} page={page} />

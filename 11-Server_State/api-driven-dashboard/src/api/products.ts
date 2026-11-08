@@ -18,6 +18,7 @@ export async function fetchProducts(page: number): Promise<ProductsResponse> {
 }
 
 export async function addProduct(input: ProductInput): Promise<Product> {
+  setTimeout(() => {}, 500);
   const response = await fetch(`${apiBaseUrl}/add`, {
     method: "POST",
     headers: {
