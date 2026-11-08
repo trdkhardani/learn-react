@@ -1,17 +1,14 @@
-import CreateNewProductRecord from '../components/CreateNewProductRecord';
-import EditNewProductRecord from '../components/EditNewProductRecord';
-import NewProductRecords from '../components/NewProductRecords';
+import CreateProduct from '../components/CreateProduct';
+import EditProduct from '../components/EditProduct';
 import ProductRecords from '../components/ProductRecords';
 
 function Dashboard() {
   return (
     <main>
       <ProductRecords />
-      {/** New Product Records */}
-      <NewProductRecords/>
       {/** Create/Edit New Product Record */}
-      <CreateNewProductRecord/>
-      <EditNewProductRecord/>
+      <CreateProduct/>
+      <EditProduct/>
     </main>
   )
 }

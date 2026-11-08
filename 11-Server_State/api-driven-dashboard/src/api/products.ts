@@ -1,8 +1,9 @@
-import type { Product, ProductInput, ProductsResponse } from '../types/product';
+import type { Product, ProductEditInput, ProductInput, ProductsResponse } from '../types/product';
 
-const apiBaseUrl = "https://dummyjson.com/products";
+// const apiBaseUrl = "https://dummyjson.com/products";
+const apiBaseUrl = "http://localhost:3000/products";
 
-export const newlyAddedProducts: Product[] = [];
+// export const newlyAddedProducts: Product[] = [];
 
 export async function fetchProducts(page: number): Promise<ProductsResponse> {
   const limit = 10;
@@ -16,16 +17,7 @@ export async function fetchProducts(page: number): Promise<ProductsResponse> {
   return await response.json();
 }
 
-export async function fetchNewProducts(): Promise<Product[]> {
-  const fakeNewProductsApi = async () => {
-    setTimeout(() => {
-      return newlyAddedProducts;
-    }, 500)
-  }
-  return fakeNewProductsApi;
-}
-
-export async function addNewProduct(input: ProductInput): Promise<Product> {
+export async function addProduct(input: ProductInput): Promise<Product> {
   const response = await fetch(`${apiBaseUrl}/add`, {
     method: "POST",
     headers: {
@@ -38,18 +30,22 @@ export async function addNewProduct(input: ProductInput): Promise<Product> {
     throw new Error("Error creating product");
 
   const data = await response.json();
-  newlyAddedProducts.push(data)
+  // newlyAddedProducts.push(data)
 
   return data;
 }
 
-export async function editNewProduct(productId: number, input: ProductInput): Promise<Product> {
-  const response = await fetch(`${apiBaseUrl}/${productId}`, {
+export async function editProduct(input: ProductEditInput): Promise<Product> {
+  const response = await fetch(`${apiBaseUrl}/${input.id}`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify(input)
+    body: JSON.stringify({
+      title: input.title,
+      price: input.price,
+      stock: input.stock,
+    })
   });
 
   if (!response.ok)
@@ -57,37 +53,19 @@ export async function editNewProduct(productId: number, input: ProductInput): Pr
 
   const data: Product = await response.json();
 
-  const product = newlyAddedProducts.find((product) => product.id === productId);
-
-  if (!product)
-    throw new Error("Product not found");
-
-  product.title = data.title;
-  product.price = data.price;
-  product.stock = data.stock;
-  // newlyAddedProducts.map((product) => (product.id === productId ? { id: product.id, ...data } : product))
-
   return data;
 }
 
-export async function deleteNewProduct(productId: number, input: ProductInput): Promise<void> {
+export async function deleteProduct(productId: number): Promise<void> {
   const response = await fetch(`${apiBaseUrl}/${productId}`, {
     method: "DELETE",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify(input)
   });
 
   if (!response.ok)
     throw new Error("Error deleting product");
-
-  const productIdx = newlyAddedProducts.findIndex((product) => product.id === productId);
-
-  if (productIdx === -1)
-    throw new Error("Product not found");
-
-  newlyAddedProducts.splice(productIdx, 1)
 
   return;
 }

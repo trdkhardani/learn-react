@@ -1,6 +1,6 @@
 type Pagination = {
   page: number;
-  onPageChange: (currentPage: number) => number;
+  onPageChange: (currentPage: number) => void;
   total: number;
 }
 

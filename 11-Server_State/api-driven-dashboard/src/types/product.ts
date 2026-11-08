@@ -13,3 +13,10 @@ export type ProductsResponse = {
 }
 
 export type ProductInput = Omit<Product, "id">;
+
+export type ProductEditInput = {
+  id: number;
+  title?: string;
+  price?: number;
+  stock?: number;
+}

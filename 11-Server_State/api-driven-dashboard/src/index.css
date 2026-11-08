@@ -134,7 +134,7 @@ nav ul {
 .product-card {
   border: 1px solid white;
   margin-top: 16px;
-  display: flex;
+  display: grid;
   flex-flow: column;
   /* width: 480px; */
 }

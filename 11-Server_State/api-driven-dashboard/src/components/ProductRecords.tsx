@@ -1,5 +1,5 @@
-import { keepPreviousData, useQuery } from "@tanstack/react-query";
-import { fetchProducts } from "../api/products";
+import { keepPreviousData, useMutation, useQuery } from "@tanstack/react-query";
+import { editProduct, fetchProducts } from "../api/products";
 import { useState } from "react";
 import ProductCard from "./ProductCard";
 import Pagination from "./Pagination";
@@ -20,14 +20,24 @@ function ProductRecords() {
     staleTime: 60_000,
   });
 
+  // const markSoldOut = async (productId: number) => {
+  //   await editProduct(productId, { stock: 0 });
+  // }
+
+  // const mutation = useMutation({
+  //   mutationFn: markSoldOut,
+    
+  // });
+
   return (
     <>
+    {/* {console.log(productRecords)} */}
       <h2>Products</h2>
       {(isPending || isFetching) && <p>Loading...</p>}
       {isError && <p>{error.message}</p>}
       <div id="product-records" className="products-container">
         {productRecords?.products.map((product) => (
-          <ProductCard product={product} />
+          <ProductCard key={product.id} product={product} page={page} />
         ))}
       </div>
       <Pagination
