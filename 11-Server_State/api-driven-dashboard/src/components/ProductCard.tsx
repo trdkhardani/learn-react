@@ -6,8 +6,6 @@ import type { Product, ProductsResponse } from "../types/product";
 type IndividualProduct = {
   product: Product;
   page: number;
-  // onDetailModalOpen: (isOpen: boolean) => void;
-  // onProductIdForDetailChange: (productId: string) => void;
 };
 
 function ProductCard({ product, page }: IndividualProduct) {

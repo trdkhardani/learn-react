@@ -50,31 +50,26 @@ function CreateProduct() {
     mutationFn: addProduct,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["productRecords"] });
+      setProductInput({ title: "", price: "", stock: "" });
     },
   });
 
   const handleAddProduct = (ev: React.SubmitEvent<HTMLFormElement>) => {
-    try {
-      ev.preventDefault();
+    ev.preventDefault();
 
-      const validate = validateForm(productInput);
-      if (Object.keys(validate).length > 0) {
-        setValidationError(validate);
-        return;
-      }
-
-      setValidationError({});
-
-      mutation.mutate({
-        title: productInput.title.trim(),
-        price: Number(productInput.price),
-        stock: Number(productInput.stock),
-      });
-
-      setProductInput({ title: "", price: "", stock: "" });
-    } catch (err) {
-      console.error(err);
+    const validate = validateForm(productInput);
+    if (Object.keys(validate).length > 0) {
+      setValidationError(validate);
+      return;
     }
+
+    setValidationError({});
+
+    mutation.mutate({
+      title: productInput.title.trim(),
+      price: Number(productInput.price),
+      stock: Number(productInput.stock),
+    });
   };
 
   return (
@@ -145,7 +140,7 @@ function CreateProduct() {
           </button>
           {mutation.isError && (
             <div>
-              `Error occurred when adding product: ${mutation.error.message}`
+              Error occurred when adding product: {mutation.error.message}
             </div>
           )}
           {mutation.isSuccess && <div>Successfully added product.</div>}
