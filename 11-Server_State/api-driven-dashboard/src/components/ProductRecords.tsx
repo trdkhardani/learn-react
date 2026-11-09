@@ -19,7 +19,7 @@ function ProductRecords() {
     refetch,
   } = useQuery({
     queryKey: ["productRecords", page],
-    queryFn: () => fetchProducts(page),
+    queryFn: ({ signal }) => fetchProducts(page, signal),
     placeholderData: keepPreviousData,
     staleTime: 60_000,
   });
@@ -28,7 +28,8 @@ function ProductRecords() {
     <>
       {/* {console.log(productRecords)} */}
       <h2>Products</h2>
-      {(isPending || isFetching) && <p>Loading...</p>}
+      {(isPending) && <p>Loading Products...</p>}
+      {!isPending && isFetching && (<p>Refreshing Products...</p>)}
       {isError && <p>{error.message}</p>}
       <button
         type="button"
@@ -46,7 +47,7 @@ function ProductRecords() {
       <Pagination
         page={page}
         onPageChange={setPage}
-        total={productRecords?.total}
+        total={productRecords?.total ?? 0}
       />
     </>
   );

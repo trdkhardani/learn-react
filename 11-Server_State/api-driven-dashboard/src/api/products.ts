@@ -5,15 +5,14 @@ const apiBaseUrl = "http://localhost:3000/products";
 
 // export const newlyAddedProducts: Product[] = [];
 
-export async function fetchProducts(page: number): Promise<ProductsResponse> {
+export async function fetchProducts(page: number, signal?: AbortSignal): Promise<ProductsResponse> {
   const limit = 10;
   const skip = (page - 1) * limit;
-  const response = await fetch(`${apiBaseUrl}?limit=${limit}&skip=${skip}&select=id,title,price,stock`);
+  const response = await fetch(`${apiBaseUrl}?limit=${limit}&skip=${skip}&select=id,title,price,stock`, { signal });
 
   if (!response.ok)
     throw new Error("Error fetching products.");
 
-  // const data = await response.json();
   return await response.json();
 }
 

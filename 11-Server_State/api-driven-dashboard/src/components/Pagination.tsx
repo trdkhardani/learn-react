@@ -1,6 +1,8 @@
+import type React from 'react';
+
 type Pagination = {
   page: number;
-  onPageChange: (currentPage: number) => void;
+  onPageChange: React.Dispatch<React.SetStateAction<number>>;
   total: number;
 }
 
@@ -9,14 +11,14 @@ function Pagination({ page, onPageChange, total }: Pagination) {
   return (
     <div id="pagination">
       <button
-        onClick={() => onPageChange((currentPage: number) => currentPage - 1)}
+        onClick={() => onPageChange((page: number) => page - 1)}
         disabled={page === 1 ? true : false}
       >
         Previous
       </button>
       <p>Page {page}</p>
       <button
-        onClick={() => onPageChange((currentPage: number) => currentPage + 1)}
+        onClick={() => onPageChange((page: number) => page + 1)}
         disabled={page >= totalPages ? true : false}
       >
         Next

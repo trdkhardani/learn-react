@@ -18,24 +18,16 @@ function ProductCard({ product, page }: IndividualProduct) {
       mutationFn: editProduct,
 
       onMutate: async ({ id, stock }) => {
-        console.log("1. onMutate triggered", { id, stock });
-
         await queryClient.cancelQueries({
           queryKey: ["productRecords", page],
         });
 
-        console.log("2. Queries cancelled");
-
         const previousProductsResponse =
           queryClient.getQueryData<ProductsResponse>(["productRecords", page]);
-
-        console.log("3. Previous products:", previousProductsResponse);
 
         queryClient.setQueryData<ProductsResponse>(
           ["productRecords", page],
           (oldData) => {
-            console.log("4. Current cache:", oldData);
-
             if (!oldData) return oldData;
 
             return {
@@ -46,8 +38,6 @@ function ProductCard({ product, page }: IndividualProduct) {
             };
           },
         );
-
-        console.log("5. Cache updated");
 
         return { previousProductsResponse };
       },
@@ -65,12 +55,12 @@ function ProductCard({ product, page }: IndividualProduct) {
         });
       },
     }),
+
     delete: useMutation({
       mutationFn: deleteProduct,
       onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: ["productRecords", page] });
+        queryClient.invalidateQueries({ queryKey: ["productRecords"] });
       },
-      // onError: (error, variables, context) => {}
     }),
   };
 
@@ -95,8 +85,9 @@ function ProductCard({ product, page }: IndividualProduct) {
           data-testid={`mark-as-sold-out-button-${product.id}`}
           aria-label={`Mark ${product.title} as sold out`}
           onClick={() => handleMarkAsSold(product.id)}
+          disabled={mutation.edit.isPending}
         >
-          Mark as sold out
+          {mutation.edit.isPending ? 'Marking...' : 'Mark as sold out'}
         </button>
         <button
           data-testid={`delete-product-button-${product.id}`}
