@@ -82,7 +82,7 @@ function CreateProduct() {
       <form onSubmit={handleAddProduct}>
         <div>
           <label htmlFor="productTitle">Product Title</label>
-          <input value={productInput.title} onChange={(ev) => setProductInput(prevInput => ({...prevInput, title: ev.target.value}))} type="text" name="productTitle" id="productTitle" />
+          <input onBlur={() => {}} value={productInput.title} onChange={(ev) => setProductInput(prevInput => ({...prevInput, title: ev.target.value}))} type="text" name="productTitle" id="productTitle" />
           {validationError.title && <p className='validation-msg'>{validationError.title}</p>}
         </div>
         <div>

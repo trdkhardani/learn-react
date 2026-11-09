@@ -1,6 +1,6 @@
 // import { useCartStore } from '../stores/useCartStore';
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { editProduct } from "../api/products";
+import { deleteProduct, editProduct } from "../api/products";
 import type { Product, ProductsResponse } from "../types/product";
 
 type IndividualProduct = {
@@ -13,60 +13,73 @@ type IndividualProduct = {
 function ProductCard({ product, page }: IndividualProduct) {
   const queryClient = useQueryClient();
 
-  const mutation = useMutation({
-    mutationFn: editProduct,
+  const mutation = {
+    edit: useMutation({
+      mutationFn: editProduct,
 
-    onMutate: async ({ id, stock }) => {
-      console.log("1. onMutate triggered", { id, stock });
+      onMutate: async ({ id, stock }) => {
+        console.log("1. onMutate triggered", { id, stock });
 
-      await queryClient.cancelQueries({
-        queryKey: ["productRecords", page],
-      });
+        await queryClient.cancelQueries({
+          queryKey: ["productRecords", page],
+        });
 
-      console.log("2. Queries cancelled");
+        console.log("2. Queries cancelled");
 
-      const previousProductsResponse = queryClient.getQueryData<ProductsResponse>([
-        "productRecords",
-        page,
-      ]);
+        const previousProductsResponse =
+          queryClient.getQueryData<ProductsResponse>(["productRecords", page]);
 
-      console.log("3. Previous products:", previousProductsResponse);
+        console.log("3. Previous products:", previousProductsResponse);
 
-      queryClient.setQueryData<ProductsResponse>(
-        ["productRecords", page],
-        (oldData) => {
-          console.log("4. Current cache:", oldData);
+        queryClient.setQueryData<ProductsResponse>(
+          ["productRecords", page],
+          (oldData) => {
+            console.log("4. Current cache:", oldData);
 
-          if (!oldData) return oldData;
+            if (!oldData) return oldData;
 
-          return {
-            ...oldData,
-            products: oldData.products.map((product) => product.id === id ? { ...product, stock } : product)
-          }
-        },
-      );
+            return {
+              ...oldData,
+              products: oldData.products.map((product) =>
+                product.id === id ? { ...product, stock } : product,
+              ),
+            };
+          },
+        );
 
-      console.log("5. Cache updated");
+        console.log("5. Cache updated");
 
-      return { previousProductsResponse };
-    },
+        return { previousProductsResponse };
+      },
 
-    onError: (_error, _variables, context) => {
-      queryClient.setQueryData(
-        ["productRecords", page],
-        context?.previousProductsResponse,
-      );
-    },
+      onError: (_error, _variables, context) => {
+        queryClient.setQueryData(
+          ["productRecords", page],
+          context?.previousProductsResponse,
+        );
+      },
 
-    onSettled: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["productRecords", page],
-      });
-    },
-  });
+      onSettled: () => {
+        queryClient.invalidateQueries({
+          queryKey: ["productRecords", page],
+        });
+      },
+    }),
+    delete: useMutation({
+      mutationFn: deleteProduct,
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ["productRecords", page] });
+      },
+      // onError: (error, variables, context) => {}
+    }),
+  };
 
   const handleMarkAsSold = (productId: number) => {
-    mutation.mutate({ id: productId, stock: 0 })
+    mutation.edit.mutate({ id: productId, stock: 0 });
+  };
+
+  const handleDelete = (productId: number) => {
+    mutation.delete.mutate(productId);
   }
 
   return (
@@ -76,7 +89,7 @@ function ProductCard({ product, page }: IndividualProduct) {
       </p> */}
       <h2>{product.title}</h2>
       <p>${product.price}</p>
-      <p>{product.stock > 0 ? `Stock: ${product.stock}` : 'Out of stock'}</p>
+      <p>{product.stock > 0 ? `Stock: ${product.stock}` : "Out of stock"}</p>
       <div className="product-card-buttons-wrapper">
         <button
           data-testid={`mark-as-sold-out-button-${product.id}`}
@@ -88,13 +101,14 @@ function ProductCard({ product, page }: IndividualProduct) {
         <button
           data-testid={`delete-product-button-${product.id}`}
           aria-label={`Delete ${product.title}`}
-          onClick={() => {}}
+          onClick={() => handleDelete(product.id)}
+          disabled={mutation.delete.isPending}
         >
-          Delete Product
+          {mutation.delete.isPending ? 'Deleting...' : 'Delete Product'}
         </button>
       </div>
-      {/* <ProductDetail productId={String(product.id)} /> */}
-      {/* <Link className='view-detail-btn' to={`/products/${product.id}`}>View Detail</Link> */}
+      { mutation.delete.isError && <div>Error deleting this product. Please try again later.</div> }
+      { mutation.edit.isError && <div>Error marking this product as sold out. Please try again later.</div> }
     </div>
   );
 }
